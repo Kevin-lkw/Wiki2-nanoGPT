@@ -1,13 +1,13 @@
 import time
 
-out_dir = 'out-shakespeare'
+out_dir = 'out-wiki'
 eval_interval = 5
 eval_iters = 40
 wandb_log = False # feel free to turn on
-wandb_project = 'shakespeare'
+wandb_project = 'wikitext-2'
 wandb_run_name = 'ft-' + str(time.time())
 
-dataset = 'shakespeare'
+dataset = 'wikitext-2'
 init_from = 'gpt2' # this is the largest GPT-2 model
 
 # only save checkpoints if the validation loss improves
