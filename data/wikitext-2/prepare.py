@@ -19,8 +19,6 @@ num_proc_load_dataset = num_proc
 if __name__ == '__main__':
     # takes 54GB in huggingface .cache dir, about 8M documents (8,013,769)
     dataset = load_dataset("wikitext","wikitext-2-v1", num_proc=num_proc_load_dataset)
-    
-    print(dataset)
     # DatasetDict({
     #     test: Dataset({
     #         features: ['text'],
@@ -56,6 +54,7 @@ if __name__ == '__main__':
     print(tokenized)
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
+        print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
         arr_len = np.sum(dset['len'], dtype=np.uint64)
         filename = os.path.join(os.path.dirname(__file__), f'{split}.bin')
         dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
@@ -71,10 +70,6 @@ if __name__ == '__main__':
             arr[idx : idx + len(arr_batch)] = arr_batch
             idx += len(arr_batch)
         arr.flush()
-
-    # train.bin is ~17GB, val.bin ~8.5MB
-    # train has ~9B tokens (9,035,582,198)
-    # val has ~4M tokens (4,434,897)
 
     # to read the bin files later, e.g. with numpy:
     # m = np.memmap('train.bin', dtype=np.uint16, mode='r')
