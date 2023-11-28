@@ -17,25 +17,8 @@ num_proc = 8
 num_proc_load_dataset = num_proc
 
 if __name__ == '__main__':
-    # takes 54GB in huggingface .cache dir, about 8M documents (8,013,769)
     dataset = load_dataset("wikitext","wikitext-2-raw-v1", num_proc=num_proc_load_dataset)
-    # DatasetDict({
-    #     test: Dataset({
-    #         features: ['text'],
-    #         num_rows: 4358
-    #     })
-    #     train: Dataset({
-    #         features: ['text'],
-    #         num_rows: 36718
-    #     })
-    #     validation: Dataset({
-    #         features: ['text'],
-    #         num_rows: 3760
-    #     })
-    # })
     dataset['val'] = dataset.pop("validation")
-    print(dataset)
-    # we now want to tokenize the dataset. first define the encoding function (gpt2 bpe)
     enc = tiktoken.get_encoding("gpt2")
     def process(example):
         ids = enc.encode_ordinary(example['text']) # encode_ordinary ignores any special tokens
@@ -51,10 +34,8 @@ if __name__ == '__main__':
         desc="tokenizing the splits",
         num_proc=num_proc,
     )
-    print(tokenized)
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
-        print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
         arr_len = np.sum(dset['len'], dtype=np.uint64)
         print(f'{split} has {arr_len:,} tokens')
         filename = os.path.join(os.path.dirname(__file__), f'{split}.bin')
@@ -72,8 +53,8 @@ if __name__ == '__main__':
             idx += len(arr_batch)
         arr.flush()
 
-    # train.bin has 2,459,198 tokens
-    # test.bin has 297,301 tokens
-    # val.bin has 259,821 tokens
+    # train.bin has 2,391,884 tokens
+    # test.bin has 283,287 tokens
+    # val.bin has 247,289 tokens
     # to read the bin files later, e.g. with numpy:
     # m = np.memmap('train.bin', dtype=np.uint16, mode='r')
