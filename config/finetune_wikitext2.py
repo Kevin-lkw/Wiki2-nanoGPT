@@ -7,7 +7,7 @@ wandb_project = 'wikitext-2'
 wandb_run_name = 'ft-' + str(time.time())
 
 dataset = 'wikitext-2'
-init_from = 'gpt2-large' # this is the largest GPT-2 model
+init_from = 'gpt2' # this is the largest GPT-2 model
 out_dir = 'out-wiki/'+init_from
 
 

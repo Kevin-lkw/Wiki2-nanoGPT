@@ -1,3 +1,28 @@
+# fine-tuning GPT-2 on Wikitext-2
+This is a fork of [karpathy/nanoGPT]. The original README is below. 
+Install the dependencies listed in the [original README](#install).
+
+This fork is used to fine-tune GPT-2 on Wikitext-2. A Module to calculate the perplexity of a text is also included. 
+## prepare data wikitext-2
+To prepare the data, run the following command:
+```
+python data/wikitext2/prepare.py
+```
+This downloads and tokenizes the [Wikitext-2](https://huggingface.co/datasets/wikitext) dataset. It will create a `train.bin` and `val.bin` and `test.bin` which holds the GPT2 BPE token ids in one sequence.
+
+## fine-tuning
+To fine-tune GPT-2 on Wikitext-2, run the following command:
+```
+python train.py config/finetune_wikitext2.py
+```
+The config file contains the hyperparameters for the fine-tuning. The model is initialized from the GPT-2 checkpoint with 124M parameters. The fine-tuning takes about 10 minutes on a single GPU. The best checkpoint is saved in the `out_dir` directory.
+
+## perplexity
+To calculate the perplexity of a text, run the following command:
+```
+python ppl.py eval_ppl_wiki.py
+```
+The config file contains the hyperparameters for the perplexity calculation. We use sliding windows to calculate the perplexity of the text. We use a stride of 128 and a window size of 1024. The perplexity is calculated on the test set of Wikitext-2. The perplexity is calculated on a single GPU.
 
 # nanoGPT
 
