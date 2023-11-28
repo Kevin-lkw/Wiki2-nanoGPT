@@ -15,14 +15,14 @@ To fine-tune GPT-2 on Wikitext-2, run the following command:
 ```
 python train.py config/finetune_wikitext2.py
 ```
-The config file contains the hyperparameters for the fine-tuning. The model is initialized from the GPT-2 checkpoint with 124M parameters. The fine-tuning takes about 10 minutes on a single GPU. The best checkpoint is saved in the `out_dir` directory.
+The config file contains the hyperparameters for the fine-tuning. The model is initialized from the GPT-2 checkpoint with 124M parameters. The fine-tuning takes about 2 minutes on a single V100 GPU. The best checkpoint is saved in the `out_dir` directory.
 
 ## perplexity
 To calculate the perplexity of a text, run the following command:
 ```
 python ppl.py eval_ppl_wiki.py
 ```
-The config file contains the hyperparameters for the perplexity calculation. We use sliding windows to calculate the perplexity of the text. We use a stride of 128 and a window size of 1024. The perplexity is calculated on the test set of Wikitext-2. The perplexity is calculated on a single GPU.
+The config file contains the hyperparameters for the perplexity calculation. We use sliding windows to calculate the perplexity of the text. We use a stride of 128 and a window size of 1024. The perplexity is calculated on the test set of Wikitext-2. The perplexity takes about 2~3 minutes on a single V100 GPU.
 
 # nanoGPT
 

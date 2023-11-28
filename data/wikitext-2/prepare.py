@@ -18,7 +18,7 @@ num_proc_load_dataset = num_proc
 
 if __name__ == '__main__':
     # takes 54GB in huggingface .cache dir, about 8M documents (8,013,769)
-    dataset = load_dataset("wikitext","wikitext-2-v1", num_proc=num_proc_load_dataset)
+    dataset = load_dataset("wikitext","wikitext-2-raw-v1", num_proc=num_proc_load_dataset)
     # DatasetDict({
     #     test: Dataset({
     #         features: ['text'],
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     enc = tiktoken.get_encoding("gpt2")
     def process(example):
         ids = enc.encode_ordinary(example['text']) # encode_ordinary ignores any special tokens
-        ids.append(enc.eot_token) # add the end of text token, e.g. 50256 for gpt2 bpe
+        # ids.append(enc.eot_token) # add the end of text token, e.g. 50256 for gpt2 bpe
         # note: I think eot should be prepended not appended... hmm. it's called "eot" though...
         out = {'ids': ids, 'len': len(ids)}
         return out
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     print(tokenized)
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
-        # print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
+        print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
         arr_len = np.sum(dset['len'], dtype=np.uint64)
         print(f'{split} has {arr_len:,} tokens')
         filename = os.path.join(os.path.dirname(__file__), f'{split}.bin')
@@ -72,5 +72,8 @@ if __name__ == '__main__':
             idx += len(arr_batch)
         arr.flush()
 
+    # train.bin has 2,459,198 tokens
+    # test.bin has 297,301 tokens
+    # val.bin has 259,821 tokens
     # to read the bin files later, e.g. with numpy:
     # m = np.memmap('train.bin', dtype=np.uint16, mode='r')

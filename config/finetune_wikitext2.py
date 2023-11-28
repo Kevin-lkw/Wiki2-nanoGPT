@@ -7,7 +7,7 @@ wandb_project = 'wikitext-2'
 wandb_run_name = 'ft-' + str(time.time())
 
 dataset = 'wikitext-2'
-init_from = 'gpt2' # this is the largest GPT-2 model
+init_from = 'gpt2-medium' # this is the largest GPT-2 model
 out_dir = 'ckpt/out-wiki/'+init_from
 
 
@@ -15,10 +15,10 @@ out_dir = 'ckpt/out-wiki/'+init_from
 always_save_checkpoint = False
 
 # the number of examples per iter:
-# 1 batch_size * 32 grad_accum * 1024 tokens = 32,768 tokens/iter
+# 4 batch_size * 8 grad_accum * 1024 tokens = 32,768 tokens/iter
 # wikitext-2 has 2M(2,459,198) tokens, so 1 epoch ~= 75 iters
-batch_size = 1
-gradient_accumulation_steps = 32
+batch_size = 4
+gradient_accumulation_steps = 8
 max_iters = 150
 
 # finetune at constant LR

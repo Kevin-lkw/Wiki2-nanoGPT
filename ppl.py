@@ -3,24 +3,6 @@ This code calulates the perplexity of the model on the test set.
 The code is adapted from the original code trainer.py
 """
 
-"""
-This training script can be run both on a single gpu in debug mode,
-and also in a larger training run with distributed data parallel (ddp).
-
-To run on a single GPU, example:
-$ python ppl.py --batch_size=32 --compile=False
-
-To run with DDP on 4 gpus on 1 node, example:
-$ torchrun --standalone --nproc_per_node=4 ppl.py
-
-To run with DDP on 4 gpus across 2 nodes, example:
-- Run on the first (master) node with example IP 123.456.123.456:
-$ torchrun --nproc_per_node=8 --nnodes=2 --node_rank=0 --master_addr=123.456.123.456 --master_port=1234 ppl.py
-- Run on the worker node:
-$ torchrun --nproc_per_node=8 --nnodes=2 --node_rank=1 --master_addr=123.456.123.456 --master_port=1234 ppl.py
-(If your cluster does not have Infiniband interconnect prepend NCCL_IB_DISABLE=1)
-"""
-
 import os
 import pickle
 from contextlib import nullcontext
@@ -48,6 +30,7 @@ wandb_project = 'owt'
 wandb_run_name = 'gpt2' # 'run' + str(time.time())
 # data
 dataset = 'openwebtext'
+split = 'test'
 gradient_accumulation_steps = 5 * 8 # used to simulate larger batch sizes
 batch_size = 12 # if gradient_accumulation_steps > 1, this is the micro-batch size
 block_size = 1024
@@ -202,17 +185,18 @@ if compile:
 if ddp:
     model = DDP(model, device_ids=[ddp_local_rank])
 
+assert split in ['train', 'val', 'test']
+data = test_data if split == 'test' else val_data if split == 'val' else train_data
 max_length = model.config.block_size
-seq_len = len(test_data)
-
+seq_len = len(data)
 model.eval()
 nlls = []
 prev_end_loc = 0
 for begin_loc in tqdm(range(0, seq_len, stride)):
     end_loc = min(begin_loc + max_length, seq_len-1)
     trg_len = end_loc - prev_end_loc  # may be different from stride on last loop
-    input_ids = torch.from_numpy((test_data[begin_loc:end_loc].astype(np.int64))).unsqueeze(0).to(device)
-    target_ids = torch.from_numpy((test_data[begin_loc+1:end_loc+1].astype(np.int64))).unsqueeze(0).to(device)
+    input_ids = torch.from_numpy((data[begin_loc:end_loc].astype(np.int64))).unsqueeze(0).to(device)
+    target_ids = torch.from_numpy((data[begin_loc+1:end_loc+1].astype(np.int64))).unsqueeze(0).to(device)
     target_ids[:, :-trg_len] = -1
 
     with torch.no_grad():
