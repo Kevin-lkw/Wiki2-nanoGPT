@@ -54,8 +54,9 @@ if __name__ == '__main__':
     print(tokenized)
     # concatenate all the ids in each dataset into one large file we can use for training
     for split, dset in tokenized.items():
-        print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
+        # print('dset',(dset),'len',dset['len'][:3],'features',dset['ids'][:3])    
         arr_len = np.sum(dset['len'], dtype=np.uint64)
+        print(f'{split} has {arr_len:,} tokens')
         filename = os.path.join(os.path.dirname(__file__), f'{split}.bin')
         dtype = np.uint16 # (can do since enc.max_token_value == 50256 is < 2**16)
         arr = np.memmap(filename, dtype=dtype, mode='w+', shape=(arr_len,))

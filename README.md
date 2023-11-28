@@ -1,5 +1,5 @@
 # fine-tuning GPT-2 on Wikitext-2
-This is a fork of [karpathy/nanoGPT]. The original README is below. 
+This is a fork of [karpathy/nanoGPT](https://github.com/karpathy/nanoGPT). The original README is below. 
 Install the dependencies listed in the [original README](#install).
 
 This fork is used to fine-tune GPT-2 on Wikitext-2. A Module to calculate the perplexity of a text is also included. 
@@ -9,7 +9,7 @@ To prepare the data, run the following command:
 python data/wikitext2/prepare.py
 ```
 This downloads and tokenizes the [Wikitext-2](https://huggingface.co/datasets/wikitext) dataset. It will create a `train.bin` and `val.bin` and `test.bin` which holds the GPT2 BPE token ids in one sequence.
-
+We use [tiktoken](https://github.com/openai/tiktoken) to tokenize the text. The tokenizer is initialized from the GPT-2 checkpoint with 124M parameters.
 ## fine-tuning
 To fine-tune GPT-2 on Wikitext-2, run the following command:
 ```
